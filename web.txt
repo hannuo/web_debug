@@ -1,0 +1,317 @@
+/**********************************一****************************************/
+/**********************************一****************************************/
+HTTP协议简介
+01.
+Request Headers
+GET / /HTTP/1.1
+Host: www.sina.com.cn
+...
+
+02.
+Response Headers
+HTTP/1.1 200 OK
+Content-Type: text/html 
+...
+
+Content-Type指示响应的内容，这里表示HTML网页。游览器依靠Content-Type来判断相应的内容是网页还是图片，是视频还是音乐
+
+HTTP响应的Body就是HTML源码
+
+03
+当游览器读取到新浪首页的HTML源码后，它会解析HTML，显示页面，然后，根据HTML里面的各种链接，再发送HTTP请求给新浪服务器，拿到相应的图片，视频，Flash，JavaScript脚本，CSS等各种资源，最终显示出一个完整的页面。
+
+
+一个HTTP请求只处理一个资源，我们只需要在HTTP请求中把HTML发送出去，不需要考虑如何附带图片，视频等，游览器如何需要请求图片和视频，它会发送另一个HTTP请求。
+
+04.
+HTTP GET请求的格式：
+GET /path HTTP/1.1
+Header1: Value1
+Header2: Value2
+Header3: Value3
+
+每个Header一行一个，换行符\r\n
+
+
+HTTP POST请求的格式：
+POST /path HTTP/1.1
+Header1: Value1
+Header2: Value2
+Header3: Value3
+
+body data goes here...
+
+当遇到连续两个\r\n，Header部分结束，后面的数据全部是Body
+
+
+HTTP响应的格式：
+200 OK
+Header1: Value1
+Header2: Value2
+Header3: Value3
+
+body data goes here...
+
+HTTP响应如果包含body，也是通过\r\n\r\n来分隔的。请再次注意，Body的数据类型由Content-Type头来确定，如果是网页，Body就是文本，如果是图片，Body就是图片的二进制数据。
+
+当存在Content-Encoding时，Body数据是被压缩的，最常见的压缩方式是gzip，所以，看到Content-Encoding: gzip时，需要将Body数据先解压缩，才能得到真正的数据。压缩的目的在于减少Body的大小，加快网络传输。
+
+/**********************************一****************************************/
+/**********************************一****************************************/
+HTML简介
+
+1.
+HTML文档就是一系列的Tag组成，最外层的Tag是<html>。
+
+2.
+CSS是Cascading Style Sheets（层叠样式表）的简称，CSS用来控制HTML里的所有元素如何展现
+
+3.
+JavaScript是为了让HTML具有交互性而作为脚本语言添加的，JavaScript既可以内嵌到HTML中，也可以从外部链接到HTML中。如可实现用户点击标题时把标题变成红色
+
+4.
+当我们用Python或者其他语言开发Web应用时，我们就是要在服务器端动态创建出HTML，这样，浏览器就会向不同的用户显示出不同的Web页面。
+
+/**********************************一****************************************/
+/**********************************一****************************************/
+WSGI接口
+一个Web应用的本质是什么
+1，2, 3, 4.
+
+1.最简单的Web应用就是先把HTML用文件保存好，用一个现成的HTTP服务器软件，接受用户请求，从文件中读取HTML，返回。Apache，Nginx，Lighttpd等这些常见的静态服务器就是干这件事情的
+
+2.如果要动态生成HTML，需要把上诉步骤自己来实现，不过，接受HTTP请求，解析HTTP请求，发送HTTP响应都是苦力活，如果我们自己来写这些底层代码，还没写动态HTML，花大笔时间去读HTTP规范。
+
+3.WSGI
+正确的做法就是底层代码由专门的服务器软件实现，我们用Python专注于生成HTML文档。我们不许奥接触到TCP连接，HTTP原始请求和相应格式，所以，我们需要一个统一的接口，让我们专心用Python编写Web业务，这个接口就是 Web Server Gateway Interface
+
+WSGI接口定义非常简单，它只要求Web开发者实现一个符合WSGI标准的函数，就可以响应HTTP请求。
+
+def application(environ,start_response):
+    start_response('200 OK',[('Content-Type','text/htmel')])
+    return [b'<h1>Hello,web!</h1>']
+
+3.1
+application(environ，start_response)这就是一个符合WSGI标准的一个HTTP处理函数
+接受两个参数：
+environ：一个包含所有HTTP请求信息的dict对象；
+start_response:一个发送HTTP相应的函数
+
+3.1
+start_response('200 OK', [('Content-Type', 'text/html')])
+发送了HTTP响应的Header，注意Header只能发送一次，只能调用一次start_response()函数。
+接受两个参数，一个是HTTP响应码，一个是一组list表示的HTTP Header，每个Header用一个包含
+两个str的tuple表示，通常情况下，Content-Type投，其他常用的HTTP Header也应该发送
+
+3.3
+函数的返回值b'<h1>hello,web!</h1>'将作为HTTP响应的Body发送给游览器
+
+整个application()函数本身没有涉及到任何解析HTTP的部分，我们关心的就是如何从environ这个dict对象拿到HTTP请求信息，然后构造HTML，通过start_response()发送Header，最后返回body
+
+4.WSGI的application()函数如何调用
+
+application()函数必须有WSGI服务器来调用，有很多符合WSGI规范的服务器，这里我们找一个简单的WSGI服务器，即Python内置的一个WSGI服务器，即模块wsgiref，先让我们程序跑起来
+（wsgiref，用纯Python编写的WSGI服务器的参考实现（该实现完全符合WSGI标准，但不考虑任何运行销量，仅供开发和测试使用）
+
+5.实现
+5.1 写一个hello.py 实现WSGI处理函数application()
+
+5.2 编写一个server.py，负责启动WSGI服务器，加载application()函数
+#从wsgiref模块导入
+from wsgiref.simple_server import make_server
+#导入我们自己编写的application函数
+
+#创建一个服务器，IP地址为空，端口是8000，处理函数是application:
+httpd = make_server('',80,application)
+print('Serving HTTP on port 80...')
+#开始监听HTTP请求
+httpd.server_forever()
+
+
+按ctrl+c终止服务器
+
+/**********************************一****************************************/
+/**********************************一****************************************/
+使用Web框架
+
+引子：了解了WSGI框架，我们发现：其实一个Web App，就是写一个WSGI的处理函数，针对每个HTTP请求进行响应，通过请求信息，返回不同的响应
+
+1.如何处理HTTP请求不是问题，问题是如何处理100个不同的URL。每一个URL可以对应GET和POST请求，当然还有PUT、DELETE等请求
+
+从environ变量里取出HTTP请求的信息，然后逐个判断：
+
+method = environ['REQUERT_METHOD']
+path = environ['PATH_INFO']
+if method == 'GET' and path = '/':
+    return ...
+...
+
+WSGI提供的接口虽然比HTTP接口高级了不少，但和Web APP的处理逻辑比，还是比较低级，我们需要在WSGI接口之上能进一步抽象，让我们专注于用一个函数处理一个URL，至于URL到函数的映射，就交给Web框架来做。
+
+2.用Python开发一个Web框架十分容易，Python有上百个开源的Web框架，选择一个比较流行的Flask来学习
+
+pip3 install flask
+
+
+3.通过框架flask实现
+
+3.1 写一个app.py，处理3个URL
+GET / : 首页，返回Home
+GET /signin : 登录页，显示登陆表单
+POST /signin : 处理登陆表单，显示登陆结果
+
+3.2 Flask通过Python的装饰器在内部自动地把URL和函数给关联起来
+装饰器：假设我们要增强now()函数的功能，比如，在函数调用前后自动打印日志，但又不希望修改now()函数的定义，这种在代码运行期间动态增加功能的方式，称之为“装饰器”（Decorator）。本质上，decorator就是一个返回函数的高阶函数。
+
+from flask import Flask
+from flask import request
+
+app = Flask(__name__)
+
+@app.route('/', methods=['GET', 'POST'])
+def home():
+    return '<h1>Home</h1>'
+
+@app.route('/signin', methods=['GET'])
+def signin_form():
+    return '''<form action="/signin" method="post">
+              <p><input name="username"></p>
+              <p><input name="password" type="password"></p>
+              <p><button type="submit">Sign In</button></p>
+              </form>'''
+
+@app.route('/signin', methods=['POST'])
+def signin():
+    # 需要从request对象读取表单内容：
+    if request.form['username']=='admin' and request.form['password']=='password':
+        return '<h3>Hello, admin!</h3>'
+    return '<h3>Bad username or password.</h3>'
+
+if __name__ == '__main__':
+    app.run()
+
+在编写URL处理函数时，除了配置URL外，从HTTP请求拿到用户数据也是非常重要的。Web框架都提供了自己的API来实现这些功能。Flask通过request.form['name']来获取表单的内容。
+
+
+
+3.3 运行python app.py，Flask自带的Server在端口5000上监听：
+实际的Web App应该拿到用户名和口令后，去数据库查询再比对，来判断用户是否能登录成功。
+
+3.4
+常见的Python Web框架还有:
+Diango:全能型Web框架
+web.py:一个小巧的Web框架
+Bottle:和Flask类型的Web框架
+Tornado:Facebook的开源异步Web框架
+有了Web框架，我们在编写Web应用时，注意力就从WSGI处理函数转移到URL+对应的处理函数，这样，编写Web App就更加简单了。
+
+/**********************************一****************************************/
+/**********************************一****************************************/
+模版技术
+1.Web APP最复杂的部分就在HTML页面，不仅要正确，还要通过CSS美化，再加上复杂的JavaScript脚本来上线各种交互和动画效果。在Python代码中拼字符串是不现实的，所以，模版技术出现了
+
+2.MVC  Modle-View-Controller 模型 视图 控制器
+
+2.1 模版，预先准备的一个HTML文档，这个HTML文档嵌入了一些变量和指令，然后，根据我们传入的数据，替换后，得到最终的HTML，发送给用户
+
+GET /Michale
+	##name = 'Michale"
+app.py
+@app.route('/<name>')
+def home(name):
+    return render_template('home.html',name=name)
+
+模版
+<html>
+<body>
+    <p>Hello,{{name}}!</p> #变量{{name}}替换为'Michael'
+</body>
+</html>
+
+2.2
+Python处理URL的函数就是C:Controller
+负责业务逻辑，比如检查用户名是否存在，取出用户信息等等
+
+包含变量{{name}}的模版就是V:View
+负责显示逻辑，通过简单的替换一些变量，View最终输出的就是用户看到的HTML
+
+上面的例子中，Model就是一个dict ｛'name':'Michael'}，M:Model
+Model是用来传给View的，这样View在替换变量的时候，就可以从Model中取出相应的数据
+因为Python支持关键字参数，很多Web框架允许传入关键字参数，然后，在框架内部组装出一个dict作为model
+
+2.3 上个flask框架的例子
+Flask通过render_template()函数来实现模版的渲染，Python的模版也有很多种，Flask默认支持的模板是jinja2
+def signin():
+    username = request.form['username']
+    password = request.form['password']
+    if username=='admin' and password=='password':
+        return render_template('signin-ok.html', username=username)
+    return render_template('form.html', message='Bad username or password', username=username)
+
+2.4 安装jinja2，然后开始编写jinja2模版
+<html>
+<head>
+  <title>Please Sign In</title>
+</head>
+<body>
+  {% if message %}
+  <p style="color:red">{{ message }}</p>
+  {% endif %}
+  <form action="/signin" method="post">
+    <legend>Please sign in:</legend>
+    <p><input name="username" placeholder="Username" value="{{ username }}"></p>
+    <p><input name="password" placeholder="Password" type="password"></p>
+    <p><button type="submit">Sign In</button></p>
+  </form>
+</body>
+</html>
+
+2.5 切记，要把模版放到正确的templates目录下，和app.py同级目录下
+
+3.
+在Python代码中处理M和C，而V通过模板处理，成功把Python代码和HTML代码最大限度分离
+
+模版改起来很方便，改完保存，刷新游览器就可看到最新效果，这对于调试HTML，CSS和JavaScript的前端工程师来说实在太重要了
+
+在Jinja2模板中，我们用{{name}}表示一个需要替换的变量，很多时候，还需要循环，条件判断等指令语句，在Jinja2中，用{%...%}表示指令
+
+｛% for i in page_list %}
+    <a href="/page/{{i}}">{{i}}</a>
+ {% endfor %}
+
+4.除了Jinja2，常见的模板还有:
+
+Mako <% ... %> ${xxx}
+Cheetah <% ... %> ${xxx}
+Dgango 是一站式框架 ｛% 。。。%｝ {{xxx}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
