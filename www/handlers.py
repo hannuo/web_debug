@@ -184,11 +184,12 @@ def signout(request):
 
 #05 创建blog
 @get('/manage/blogs/create')
-def manage_create_blog():
+def manage_create_blog(request):
     return {
         '__template__': 'manage_blog_edit.html',
         'id': '',
-        'action': '/api/blogs'
+        'action': '/api/blogs',
+        '__user__': request.__user__
     }
 #06 编辑blog	
 @get('/manage/blogs/edit')
@@ -236,10 +237,11 @@ def manage():
     return 'redirect:/manage/comments'
 
 @get('/manage/comments')
-def manage_comments(*, page='1'):
+def manage_comments(*, page='1',request):
     return {
         '__template__': 'manage_comments.html',
-        'page_index': get_page_index(page)
+        'page_index': get_page_index(page),
+        '__user__': request.__user__
     }	
 
 @post('/api/comments/{id}/delete')
@@ -254,10 +256,11 @@ async def api_delete_comments(id, request):
 
 #08 管理blog
 @get('/manage/blogs')
-def manage_blogs(*, page='1'):
+def manage_blogs(*, page='1',request):
     return {
         '__template__': 'manage_blogs.html',
-        'page_index': get_page_index(page)
+        'page_index': get_page_index(page),
+        '__user__': request.__user__
     }
 
 #location.assign('/manage/blogs/edit?id='
@@ -271,6 +274,7 @@ async def api_delete_blog(request, *, id):
     return dict(id=id)
 	
 #09 获取某个id comments
+#href: '/blog/'+blog.id"
 @get('/blog/{id}')
 async def get_blog(id):
     blog = await Blog.find(id)
