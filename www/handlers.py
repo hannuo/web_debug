@@ -75,7 +75,7 @@ async def cookie2user(cookie_str):
 
 #01 主页
 @get('/')
-async def index(*, page='1'):
+async def index(*, page='1',request):
     logging.info('@@ get /')
     page_index = get_page_index(page)
     num = await Blog.findNumber('count(id)')
@@ -193,11 +193,12 @@ def manage_create_blog(request):
     }
 #06 编辑blog	
 @get('/manage/blogs/edit')
-def manage_edit_blog(*, id):
+def manage_edit_blog(*, id,request):
     return {
         '__template__': 'manage_blog_edit.html',
         'id': id,
-        'action': '/api/blogs/%s' % id
+        'action': '/api/blogs/%s' % id,
+        '__user__': request.__user__
     }
 
 @post('/api/blogs')
@@ -276,7 +277,7 @@ async def api_delete_blog(request, *, id):
 #09 获取某个id comments
 #href: '/blog/'+blog.id"
 @get('/blog/{id}')
-async def get_blog(id):
+async def get_blog(id,request):
     blog = await Blog.find(id)
     comments = await Comment.findAll('blog_id=?', [id], orderBy='created_at desc')
     for c in comments:
@@ -285,7 +286,8 @@ async def get_blog(id):
     return {
         '__template__': 'blog.html',
         'blog': blog,
-        'comments': comments
+        'comments': comments,
+        '__user__': request.__user__
     }
 	
 @get('/api/blogs')
@@ -299,10 +301,11 @@ async def api_blogs(*, page='1'):
     return dict(page=p, blogs=blogs)
 
 @get('/manage/users')
-def manage_users(*, page='1'):
+def manage_users(*, page='1',request):
     return {
         '__template__': 'manage_users.html',
-        'page_index': get_page_index(page)
+        'page_index': get_page_index(page),
+        '__user__': request.__user__
     }
 
 @get('/api/comments')
