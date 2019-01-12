@@ -87,7 +87,8 @@ async def index(*, page='1'):
     return {
         '__template__': 'blogs.html',
         'page': page,
-        'blogs': blogs
+        'blogs': blogs,
+        '__user__': request.__user__
     }
 
 #02 REST 具象状态传输，返回所有用户信息
