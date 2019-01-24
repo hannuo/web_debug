@@ -54,6 +54,7 @@ async def cookie2user(cookie_str):
     if not cookie_str:
         return None
     try:
+		##0015471912220111be18497722f41c990471a69d4267503000-1548400507-98b97b8c031fccc33cb283c0f58d40e7c354984e
         L = cookie_str.split('-')
         if len(L) != 3:
             return None
@@ -337,4 +338,19 @@ async def api_create_comment(id, request, *, content):
     await comment.save()
     return comment	
 	
-
+@get('/blogs/user')
+async def index(*, page='1',request):
+    logging.info('@@ get /')
+    page_index = get_page_index(page)
+    num = await Blog.findNumber('count(id)')
+    page = Page(num)
+    if num == 0:
+        blogs = []
+    else:
+        blogs = await Blog.findAll(orderBy='created_at desc', limit=(page.offset, page.limit))
+    return {
+        '__template__': 'blogs.html',
+        'page': page,
+        'blogs': blogs,
+        '__user__': request.__user__
+    }

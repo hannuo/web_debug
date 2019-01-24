@@ -47,7 +47,8 @@ def init_jinja2(app, **kw):
 async def logger_factory(app, handler):
     async def logger(request):
 		#log10
-        logging.info('***logger_facotry,Request: %s %s' % (request.method, request.path))
+		##1.request 包含哪些信息
+        logging.info('***logger_facotry,Request: %s %s \n %s' % (request.method, request.path,request))
         # await asyncio.sleep(0.3)
         return (await handler(request))
     return logger
@@ -58,6 +59,7 @@ async def auth_factory(app, handler):
         logging.info('**auth_factory,check user: %s %s' % (request.method, request.path))
         request.__user__ = None
         cookie_str = request.cookies.get(COOKIE_NAME)
+		##2. url处理函数的__user__是这里来的，request  method path cookies
         if cookie_str:
             user = await cookie2user(cookie_str)
             if user:
