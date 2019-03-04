@@ -83,7 +83,8 @@ def has_request_arg(fn):
 
 #2.
 # RequestHandler是一个类，由于定义了__call__()方法，因此可以将其实例视为函数。
-# RequestHandler 目的就是从URL函数中分析其需要接收的参数，从request中获取必要的参数，调用URL函数，然后把结果转换为web.Response对象，这样，就完全符合aiohttp框架的要求
+# RequestHandler 目的就是从URL函数中分析其需要接收的参数，从request中获取必要的参数，调用URL函数，
+# 然后把结果转换为web.Response对象，这样，就完全符合aiohttp框架的要求
 class RequestHandler(object):
 
     def __init__(self, app, fn):
@@ -154,6 +155,7 @@ def add_static(app):
 	#log8
     logging.info('add static %s => %s' % ('/static/', path))
 
+#qing04-aiohttp add_route ref app.router.add_route('GET', '/', index) 
 #3.
 # 注册一个URL处理函数
 def add_route(app, fn):

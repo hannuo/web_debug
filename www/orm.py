@@ -11,13 +11,15 @@ def log(sql, args=()):
 	#log13
     logging.info('SQL: %s' % sql)
 
-#1.我们需要创建一个全局的连接池，每个HTTP请求都可以从连接池中直接获取数据库连接。
+#qing02-创建一个全局的数据库连接池
+#1.我们需要创建一个全局的数据库连接池，每个HTTP请求都可以从连接池中直接获取数据库连接。
 #使用连接池的好处是不必频繁地打开和关闭数据库连接，而是能复用就尽量复用。
 #连接池由全局变量__pool存储，缺省情况下将编码设置为utf8，自动提交事务
 async def create_pool(loop, **kw):
 	#log2
     logging.info('create database connection pool...')
     global __pool
+	#A coroutine that creates a pool of connections to MySQL database.
     __pool = await aiomysql.create_pool(
         host=kw.get('host', 'localhost'),
         port=kw.get('port', 3306),
@@ -154,6 +156,7 @@ class ModelMetaclass(type):
             raise StandardError('Primary key not found.')
         for k in mappings.keys():
             attrs.pop(k)
+		#generator
         escaped_fields = list(map(lambda f: '`%s`' % f, fields))
         attrs['__mappings__'] = mappings # 保存属性和列的映射关系
         attrs['__table__'] = tableName

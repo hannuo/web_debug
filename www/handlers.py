@@ -340,14 +340,15 @@ async def api_create_comment(id, request, *, content):
 	
 @get('/blogs/user')
 async def index(*, page='1',request):
-    logging.info('@@ get /')
+    logging.info('@@ get /blogs/user')
     page_index = get_page_index(page)
     num = await Blog.findNumber('count(id)')
     page = Page(num)
     if num == 0:
         blogs = []
     else:
-        blogs = await Blog.findAll(orderBy='created_at desc', limit=(page.offset, page.limit))
+		
+        #blogs = await Blog.findAll(orderBy='created_at desc', limit=(page.offset, page.limit))
     return {
         '__template__': 'blogs.html',
         'page': page,
