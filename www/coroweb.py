@@ -86,6 +86,7 @@ def has_request_arg(fn):
 # RequestHandler是一个类，由于定义了__call__()方法，因此可以将其实例视为函数。
 # RequestHandler 目的就是从URL函数中分析其需要接收的参数，从request中获取必要的参数，调用URL函数，
 # 然后把结果转换为web.Response对象，这样，就完全符合aiohttp框架的要求
+#qing03-1.3 
 class RequestHandler(object):
 
     def __init__(self, app, fn):
@@ -104,6 +105,7 @@ class RequestHandler(object):
         logging.info('%s' % request)
         logging.info('********')
         if self._has_var_kw_arg or self._has_named_kw_args or self._required_kw_args:
+			##qing03-1.3 参数过滤转换
             if request.method == 'POST':
                 logging.info('RequestHandler fn:%s   POST  content_type:%s'% (_func,request.content_type))
                 if not request.content_type:
@@ -171,7 +173,7 @@ def add_static(app):
 	#log8
     logging.info('add static %s => %s' % ('/static/', path))
 
-#qing04-aiohttp add_route ref app.router.add_route('GET', '/', index) 
+#qing03-1.2 aiohttp add_route implemented by app.router.add_route('GET', '/', index) 
 #3.
 # 注册一个URL处理函数
 def add_route(app, fn):
