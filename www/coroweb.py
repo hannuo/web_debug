@@ -74,6 +74,7 @@ def has_request_arg(fn):
     params = sig.parameters
     found = False
     for name, param in params.items():
+        logging.info('sig.parameters name:%s param:%s kind:%s'%(name,param,param.kind))
         if name == 'request':
             found = True
             continue
@@ -95,11 +96,16 @@ class RequestHandler(object):
         self._has_named_kw_args = has_named_kw_args(fn)
         self._named_kw_args = get_named_kw_args(fn)
         self._required_kw_args = get_required_kw_args(fn)
+        logging.info('__init__ %s _named_kw_args:%s _required_kw_args:%s'%(fn,_named_kw_args,_required_kw_args))
 
     async def __call__(self, request):
         kw = None
+        logging.info('********')
+        logging.info('%s' % request)
+        logging.info('********')
         if self._has_var_kw_arg or self._has_named_kw_args or self._required_kw_args:
             if request.method == 'POST':
+                logging.info('RequestHandler fn:%s   POST  content_type:%s'% (_func,request.content_type))
                 if not request.content_type:
                     return web.HTTPBadRequest('Missing Content-Type.')
                 ct = request.content_type.lower()
@@ -108,19 +114,24 @@ class RequestHandler(object):
                     if not isinstance(params, dict):
                         return web.HTTPBadRequest('JSON body must be object.')
                     kw = params
+                    logging.info('RequestHandler application/json kw:%s'% kw)
                 elif ct.startswith('application/x-www-form-urlencoded') or ct.startswith('multipart/form-data'):
                     params = await request.post()
                     kw = dict(**params)
+                    logging.info('RequestHandler application/x-www-form-urlencoded kw:%s'% kw)
                 else:
                     return web.HTTPBadRequest('Unsupported Content-Type: %s' % request.content_type)
             if request.method == 'GET':
+                logging.info('RequestHandler fn:%s   GET  content_type:%s'% (_func,request.content_type))
                 qs = request.query_string
                 if qs:
                     kw = dict()
                     for k, v in parse.parse_qs(qs, True).items():
                         kw[k] = v[0]
+                    logging.info('RequestHandler quert_string %s'% kw)
         if kw is None:
             kw = dict(**request.match_info)
+            logging.info('RequestHandler kw is None match_info %s'% kw)
         else:
             if not self._has_var_kw_arg and self._named_kw_args:
                 # remove all unamed kw:
@@ -128,9 +139,11 @@ class RequestHandler(object):
                 for name in self._named_kw_args:
                     if name in kw:
                         copy[name] = kw[name]
+                        logging.info('not has_var_kw_arg _name_kw_args has name:%s kw[name]'%(name,kw[name]))
                 kw = copy
             # check named arg:
             for k, v in request.match_info.items():
+                logging.info('match_info.items k:%s v:%s'%(k,v))
                 if k in kw:
                     logging.warning('Duplicate arg name in named arg and kw args: %s' % k)
                 kw[k] = v
