@@ -1,0 +1,27 @@
+2019-03-05 22:18
+
+今日成功
+
+1. 搞懂函数对象，参数过滤那块 #qingqing02
+
+2. 搞懂一个处理request的大概顺序
+logger_factory
+
+data_factory
+
+auth_factory
+
+	上两个函数，已经传过来的请求，赋值request
+response_factory
+
+  await handler(调用真正的具有较好参数校正的route 函数)
+
+  处理response数据，返回response
+
+通过添加log，考虑各种参数类型（keyword_only等）
+搞懂问题1
+
+通过 /signin 
+
+输入用户名，密码 登陆
+搞懂问题2 （设计post json数据 response等）

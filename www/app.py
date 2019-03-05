@@ -75,6 +75,8 @@ async def data_factory(app, handler):
         logging.info('###data_factory,data handler...')
         if request.method == 'POST':
             if request.content_type.startswith('application/json'):
+                #qingqing02 {'email': 'test', 'passwd': '576f2afcdca7238248dd1939e21d2bf0ee6432e8'}
+                #$form.postJSON('/api/authenticate', data, function(err, result)
                 request.__data__ = await request.json()
                 logging.info('###request json: %s' % str(request.__data__))
             elif request.content_type.startswith('application/x-www-form-urlencoded'):
@@ -87,9 +89,13 @@ async def response_factory(app, handler):
     async def response(request):
 		#log11
         logging.info('##response_factory,Response handler...')
+        #qingqing03 handler(request) just is async def authenticate(*, email, passwd):
+        #wait handel
+        #handler(request) 什么意思，三个地方都有。先后顺序呢？？这个是最后一步，过滤response
         r = await handler(request)
         logging.info('##handler(request):%s'% r)
         if isinstance(r, web.StreamResponse):
+            #qingqing03 ##handler(request):<Response OK not prepared>
             logging.info('##web.streamResponse.')
             return r
         if isinstance(r, bytes):
@@ -116,6 +122,8 @@ async def response_factory(app, handler):
             else:
                 resp = web.Response(body=app['__templating__'].get_template(template).render(**r).encode('utf-8'))
                 resp.content_type = 'text/html;charset=utf-8'
+                #qingqing03
+                ##handler(request):{'__template__': 'blogs.html', ...
                 logging.info('##__template__ text/html')
                 return resp
         if isinstance(r, int) and r >= 100 and r < 600:

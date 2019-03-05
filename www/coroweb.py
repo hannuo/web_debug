@@ -96,7 +96,7 @@ class RequestHandler(object):
         self._has_named_kw_args = has_named_kw_args(fn)
         self._named_kw_args = get_named_kw_args(fn)
         self._required_kw_args = get_required_kw_args(fn)
-        logging.info('__init__ %s _named_kw_args:%s _required_kw_args:%s'%(fn,_named_kw_args,_required_kw_args))
+        logging.info('__init__ %s _named_kw_args:%s _required_kw_args:%s'%(fn,self._named_kw_args,self_required_kw_args))
 
     async def __call__(self, request):
         kw = None
@@ -114,6 +114,7 @@ class RequestHandler(object):
                     if not isinstance(params, dict):
                         return web.HTTPBadRequest('JSON body must be object.')
                     kw = params
+                    #qingqing02 kw:{'email': 'test', 'passwd': '576f2afcdca7238248dd1939e21d2bf0ee6432e8'}
                     logging.info('RequestHandler application/json kw:%s'% kw)
                 elif ct.startswith('application/x-www-form-urlencoded') or ct.startswith('multipart/form-data'):
                     params = await request.post()
@@ -138,6 +139,8 @@ class RequestHandler(object):
                 copy = dict()
                 for name in self._named_kw_args:
                     if name in kw:
+                        #qingqing02 kw:{'email': 'test', 'passwd': '576f2afcdca7238248dd1939e21d2bf0ee6432e8'}
+                        #这里过滤掉了 传过来的json和自身参数不匹配的参数值
                         copy[name] = kw[name]
                         logging.info('not has_var_kw_arg _name_kw_args has name:%s kw[name]'%(name,kw[name]))
                 kw = copy
