@@ -271,7 +271,7 @@ def manage_blogs(*, page='1',request):
 async def api_delete_blog(request, *, id):
     logging.info('@@ post /api/blogs/%s/delete by /manage/blogs'% id)
     check_admin(request)
-    blog = yield from Blog.find(id)
+    blog = await Blog.find(id)
     await blog.remove()
     return dict(id=id)
 	
@@ -339,15 +339,13 @@ async def api_create_comment(id, request, *, content):
     return comment	
 	
 @get('/blogs/user')
-async def index(*, page='1',request):
+async def index_twe(*, page='1',request):
     logging.info('@@ get /blogs/user')
     page_index = get_page_index(page)
     num = await Blog.findNumber('count(id)')
     page = Page(num)
     if num == 0:
         blogs = []
-    else:
-		
         #blogs = await Blog.findAll(orderBy='created_at desc', limit=(page.offset, page.limit))
     return {
         '__template__': 'blogs.html',

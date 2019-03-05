@@ -175,6 +175,7 @@ def add_routes(app, module_name):
     n = module_name.rfind('.')
     if n == (-1):
         mod = __import__(module_name, globals(), locals())
+        #logging.info('*** add_routes:mod -- %s' % mod)
     else:
         name = module_name[n+1:]
         mod = getattr(__import__(module_name[:n], globals(), locals(), [name]), name)
@@ -185,5 +186,6 @@ def add_routes(app, module_name):
         if callable(fn):
             method = getattr(fn, '__method__', None)
             path = getattr(fn, '__route__', None)
+            #logging.info('*** __method__ __route__ %s - %s' %(method,path)) 
             if method and path:
                 add_route(app, fn)
