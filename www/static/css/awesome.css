@@ -4,7 +4,9 @@
 a:hover, a:active {
     text-decoration: none;
 }
-
+/*
+qing05 3.此元素不会被显示。
+*/
 #vm {
     display: none;
 }
