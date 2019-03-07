@@ -172,6 +172,7 @@ async def authenticate(*, email, passwd):
     user.passwd = '******'
     r.content_type = 'application/json'
     r.body = json.dumps(user, ensure_ascii=False).encode('utf-8')
+    #qingqing03 
     return r
 
 #04 用户登出
@@ -324,6 +325,9 @@ async def api_get_blog(*, id):
     blog = await Blog.find(id)
     return blog
 
+#qingqing01:id positional_or_keyword request positional_or_keyword
+#content keyword_only
+# * 前面的为positional_or_keyword 后面的为keyword_only
 @post('/api/blogs/{id}/comments')
 async def api_create_comment(id, request, *, content):
     user = request.__user__

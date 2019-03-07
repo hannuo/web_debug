@@ -75,6 +75,8 @@ async def data_factory(app, handler):
         logging.info('###data_factory,data handler...')
         if request.method == 'POST':
             if request.content_type.startswith('application/json'):
+                #qingqing02 {'email': 'test', 'passwd': '576f2afcdca7238248dd1939e21d2bf0ee6432e8'}
+                #$form.postJSON('/api/authenticate', data, function(err, result)
                 request.__data__ = await request.json()
                 logging.info('###request json: %s' % str(request.__data__))
             elif request.content_type.startswith('application/x-www-form-urlencoded'):
@@ -87,9 +89,13 @@ async def response_factory(app, handler):
     async def response(request):
 		#log11
         logging.info('##response_factory,Response handler...')
+        #qingqing03 handler(request) just is async def authenticate(*, email, passwd):
+        #wait handel
+        #handler(request) 什么意思，三个地方都有。先后顺序呢？？这个是最后一步，过滤response
         r = await handler(request)
         logging.info('##handler(request):%s'% r)
         if isinstance(r, web.StreamResponse):
+            #qingqing03 ##handler(request):<Response OK not prepared>
             logging.info('##web.streamResponse.')
             return r
         if isinstance(r, bytes):
@@ -116,6 +122,8 @@ async def response_factory(app, handler):
             else:
                 resp = web.Response(body=app['__templating__'].get_template(template).render(**r).encode('utf-8'))
                 resp.content_type = 'text/html;charset=utf-8'
+                #qingqing03
+                ##handler(request):{'__template__': 'blogs.html', ...
                 logging.info('##__template__ text/html')
                 return resp
         if isinstance(r, int) and r >= 100 and r < 600:
@@ -147,18 +155,20 @@ def datetime_filter(t):
     return u'%s年%s月%s日' % (dt.year, dt.month, dt.day)
 
 async def init(loop):
-	#qing02-创建一个全局的数据库连接池
+	#qing02-1 创建一个全局的数据库连接池
     await orm.create_pool(loop=loop, user='www-data', password='www-data', db='awesome')
-	#qing03-aiohttp web 
+	#qing03-1 aiohttp web 
 	#Application is a synonym for web-server.
 	#Application contains a router instance and a list of callbacks that will be called during application finishing.
-    app = web.Application(loop=loop, middlewares=[
+    #qing03-2 logger_factory, data_factory, auth_factory, response_factory
+	app = web.Application(loop=loop, middlewares=[
         logger_factory, data_factory, auth_factory, response_factory
     ])
     init_jinja2(app, filters=dict(datetime=datetime_filter))
+	#qing03-1.1 add_routes 
     add_routes(app, 'handlers')
     add_static(app)
-	#qing01-loop ref 
+	#qing01-1.4 loop ref 
 	#Create a TCP server (socket type SOCK_STREAM) listening on port of the host address.
 	#protocol_factory must be a callable returning a protocol implementation.
 	#app.make_handler() Creates HTTP protocol factory for handling requests.
@@ -167,13 +177,13 @@ async def init(loop):
     logging.info('server started at http://127.0.0.1:9000...')
     return srv
 
-#qing01-asyncio ref
-#1.Get the current event loop. If there is no current event loop set in the current OS thread and 
+#qing01-1 asyncio ref
+#qing01-1.1 Get the current event loop. If there is no current event loop set in the current OS thread and 
 # set_event_loop() has not yet been called, asyncio will create a new event loop and set it as 
 # the current one.
 loop = asyncio.get_event_loop()
-#2.If the argument is a coroutine object it is implicitly scheduled to run as a asyncio.Task.
+#qing01-1.2 If the argument is a coroutine object it is implicitly scheduled to run as a asyncio.Task.
 loop.run_until_complete(init(loop))
-#.Run the event loop until stop() is called.
+#qing01-1.3 Run the event loop until stop() is called.
 loop.run_forever()
 
