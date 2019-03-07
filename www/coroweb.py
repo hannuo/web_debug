@@ -96,7 +96,7 @@ class RequestHandler(object):
         self._has_named_kw_args = has_named_kw_args(fn)
         self._named_kw_args = get_named_kw_args(fn)
         self._required_kw_args = get_required_kw_args(fn)
-        logging.info('__init__ %s _named_kw_args:%s _required_kw_args:%s'%(fn,_named_kw_args,_required_kw_args))
+        logging.info('__init__ %s _named_kw_args:%s _required_kw_args:%s'%(fn,self._named_kw_args,self._required_kw_args))
 
     async def __call__(self, request):
         kw = None
@@ -105,7 +105,7 @@ class RequestHandler(object):
         logging.info('********')
         if self._has_var_kw_arg or self._has_named_kw_args or self._required_kw_args:
             if request.method == 'POST':
-                logging.info('RequestHandler fn:%s   POST  content_type:%s'% (_func,request.content_type))
+                logging.info('RequestHandler fn:%s   POST  content_type:%s'% (self._func,request.content_type))
                 if not request.content_type:
                     return web.HTTPBadRequest('Missing Content-Type.')
                 ct = request.content_type.lower()
@@ -122,7 +122,7 @@ class RequestHandler(object):
                 else:
                     return web.HTTPBadRequest('Unsupported Content-Type: %s' % request.content_type)
             if request.method == 'GET':
-                logging.info('RequestHandler fn:%s   GET  content_type:%s'% (_func,request.content_type))
+                logging.info('RequestHandler fn:%s   GET  content_type:%s'% (self._func,request.content_type))
                 qs = request.query_string
                 if qs:
                     kw = dict()
@@ -139,7 +139,7 @@ class RequestHandler(object):
                 for name in self._named_kw_args:
                     if name in kw:
                         copy[name] = kw[name]
-                        logging.info('not has_var_kw_arg _name_kw_args has name:%s kw[name]'%(name,kw[name]))
+                        logging.info('not has_var_kw_arg _name_kw_args has name:%s kw[name]:%s'%(name,kw[name]))
                 kw = copy
             # check named arg:
             for k, v in request.match_info.items():
