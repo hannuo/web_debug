@@ -12,7 +12,7 @@
         data: {
             blogs: data.blogs,
             page: data.page
-        },
+        },//hqing-009
         methods: {
             edit_blog: function (blog) {
                 location.assign('/manage/blogs/edit?id=' + blog.id);
@@ -23,6 +23,7 @@
                         if (err) {
                             return alert(err.message || err.error || err);
                         }
+                        //##result handler(request):{'id': '001547194352580fc8f5063c5c049359be6cc147f457003000'}
                         refresh();
                     });
                 }
@@ -80,7 +81,7 @@ $(function() {
                 </tr>
             </thead>
             <tbody>
-                <!-- hqing-008  -->
+                <!-- hqing-008  git-->
                 <tr v-repeat="blog: blogs" >
                     <td>
                         <a target="_blank" v-attr="href: '/blog/'+blog.id" v-text="blog.name"></a>

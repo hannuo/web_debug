@@ -96,6 +96,9 @@ async def response_factory(app, handler):
         #wait handel
         #handler(request) 什么意思，三个地方都有。先后顺序呢？？这个是最后一步，过滤response
         r = await handler(request)
+		#hqing-006 -02
+		#{'page':item_cout:5,page_count:1,page_index:1,page_size:10,offset,0,limit:10,
+		#'blogs':[{'id':'***','user_id':'latest",",***}]}
         logging.info('##handler(request):%s'% r)
 		#qqing03-1.2 @post('/api/authenticate') 返回一个web.streamResponse
         if isinstance(r, web.StreamResponse):
@@ -122,6 +125,7 @@ async def response_factory(app, handler):
             template = r.get('__template__')
 			#qqing03-1.5 @get('/api/comments') 返回一个json
             if template is None:
+			#hqing-006 -03
                 resp = web.Response(body=json.dumps(r, ensure_ascii=False, default=lambda o: o.__dict__).encode('utf-8'))
                 resp.content_type = 'application/json;charset=utf-8'
                 logging.info('##__template__ application/json')
@@ -168,9 +172,7 @@ async def init(loop):
 	#Application is a synonym for web-server.
 	#Application contains a router instance and a list of callbacks that will be called during application finishing.
     #qing03-1.1 logger_factory, data_factory, auth_factory, response_factory
-	app = web.Application(loop=loop, middlewares=[
-        logger_factory, data_factory, auth_factory, response_factory
-    ])
+	app = web.Application(loop=loop, middlewares=[logger_factory, data_factory, auth_factory, response_factoryvim ])
 	#qing04-1 使用jinja2
     init_jinja2(app, filters=dict(datetime=datetime_filter))
 	#qing03-1.2 add_routes 

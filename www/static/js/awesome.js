@@ -345,12 +345,13 @@ function getJSON(url, data, callback) {
     }
     _httpJSON('GET', url, data, callback);
 }
-
+//hqing-0010
 function postJSON(url, data, callback) {
     if (arguments.length===2) {
         callback = data;
         data = {};
     }
+    console.log("postJSON", data, url);
     _httpJSON('POST', url, data, callback);
 }
 

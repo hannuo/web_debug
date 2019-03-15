@@ -271,6 +271,8 @@ def manage_blogs(*, page='1',request):
 
 #location.assign('/manage/blogs/edit?id='
 
+#hqing-011
+#@@ post /api/blogs/0015471995382294708336351a0485b98fcad85b65ec52f000/delete by /manage/blogs
 @post('/api/blogs/{id}/delete')
 async def api_delete_blog(request, *, id):
     logging.info('@@ post /api/blogs/%s/delete by /manage/blogs'% id)
@@ -294,7 +296,7 @@ async def get_blog(id,request):
         'comments': comments,
         '__user__': request.__user__
     }
-	
+#hqing-006 -01 _httpJSON: url:/api/blogs?page=1	
 @get('/api/blogs')
 async def api_blogs(*, page='1'):
     page_index = get_page_index(page)
