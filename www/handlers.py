@@ -86,7 +86,7 @@ async def index(*, page='1',request):
     else:
         blogs = await Blog.findAll(orderBy='created_at desc', limit=(page.offset, page.limit))
     #qing04-1.2  返回一个dict，让response_factory处理.
-	return {
+    return {
         '__template__': 'blogs.html',
         'page': page,
         'blogs': blogs,

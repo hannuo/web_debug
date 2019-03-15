@@ -172,7 +172,7 @@ async def init(loop):
 	#Application is a synonym for web-server.
 	#Application contains a router instance and a list of callbacks that will be called during application finishing.
     #qing03-1.1 logger_factory, data_factory, auth_factory, response_factory
-	app = web.Application(loop=loop, middlewares=[logger_factory, data_factory, auth_factory, response_factoryvim ])
+    app = web.Application(loop=loop, middlewares=[logger_factory, data_factory, auth_factory, response_factory])
 	#qing04-1 使用jinja2
     init_jinja2(app, filters=dict(datetime=datetime_filter))
 	#qing03-1.2 add_routes 
