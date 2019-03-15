@@ -92,7 +92,11 @@ async def index(*, page='1',request):
         'blogs': blogs,
         '__user__': request.__user__
     }
-
+@get('/video')
+async def PlayVideo():
+    return {
+        '__template__': 'Play.html'
+    }
 #02 REST 具象状态传输，返回所有用户信息
 @get('/api/users')
 async def api_get_users(*, page='1'):
