@@ -35,6 +35,7 @@ function initVM(blog) {
 
 $(function () {
     if (ID) {
+        //#hqing-003
         getJSON('/api/blogs/' + ID, function (err, blog) {
             if (err) {
                 return fatal(err);

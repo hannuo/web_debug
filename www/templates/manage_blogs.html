@@ -6,7 +6,7 @@
 
 <script>
 
-function initVM(data) {
+    function initVM(data) {//hqing-007
     var vm = new Vue({
         el: '#vm',
         data: {
@@ -31,7 +31,7 @@ function initVM(data) {
     });
     $('#vm').show();
 }
-
+    //#hqing-002 是在DOM加载完成后执行的回调函数，并且只会执行一次。
 $(function() {
     getJSON('/api/blogs', {
         page: {{ page_index }}
@@ -80,6 +80,7 @@ $(function() {
                 </tr>
             </thead>
             <tbody>
+                <!-- hqing-008  -->
                 <tr v-repeat="blog: blogs" >
                     <td>
                         <a target="_blank" v-attr="href: '/blog/'+blog.id" v-text="blog.name"></a>

@@ -86,7 +86,7 @@ def has_request_arg(fn):
 # RequestHandler是一个类，由于定义了__call__()方法，因此可以将其实例视为函数。
 # RequestHandler 目的就是从URL函数中分析其需要接收的参数，从request中获取必要的参数，调用URL函数，
 # 然后把结果转换为web.Response对象，这样，就完全符合aiohttp框架的要求
-#qing03-1.3 
+#qing03-1.4
 class RequestHandler(object):
 
     def __init__(self, app, fn):
@@ -105,7 +105,7 @@ class RequestHandler(object):
         logging.info('%s' % request)
         logging.info('********')
         if self._has_var_kw_arg or self._has_named_kw_args or self._required_kw_args:
-			##qing03-1.3 参数过滤转换
+			##qing03-1.5 参数过滤转换
             if request.method == 'POST':
                 logging.info('RequestHandler fn:%s   POST  content_type:%s'% (self._func,request.content_type))
                 if not request.content_type:
@@ -116,7 +116,7 @@ class RequestHandler(object):
                     if not isinstance(params, dict):
                         return web.HTTPBadRequest('JSON body must be object.')
                     kw = params
-                    #qingqing02 kw:{'email': 'test', 'passwd': '576f2afcdca7238248dd1939e21d2bf0ee6432e8'}
+                    #qqing02-1.3 kw:{'email': 'test', 'passwd': '576f2afcdca7238248dd1939e21d2bf0ee6432e8'}
                     logging.info('RequestHandler application/json kw:%s'% kw)
                 elif ct.startswith('application/x-www-form-urlencoded') or ct.startswith('multipart/form-data'):
                     params = await request.post()
@@ -141,7 +141,7 @@ class RequestHandler(object):
                 copy = dict()
                 for name in self._named_kw_args:
                     if name in kw:
-                        #qingqing02 kw:{'email': 'test', 'passwd': '576f2afcdca7238248dd1939e21d2bf0ee6432e8'}
+                        #qqing02-1.4 kw:{'email': 'test', 'passwd': '576f2afcdca7238248dd1939e21d2bf0ee6432e8'}
                         #这里过滤掉了 传过来的json和自身参数不匹配的参数值
                         copy[name] = kw[name]
                         logging.info('not has_var_kw_arg _name_kw_args has name:%s kw[name]:%s'%(name,kw[name]))
@@ -173,7 +173,7 @@ def add_static(app):
 	#log8
     logging.info('add static %s => %s' % ('/static/', path))
 
-#qing03-1.2 aiohttp add_route implemented by app.router.add_route('GET', '/', index) 
+#qing03-1.3 aiohttp add_route implemented by app.router.add_route('GET', '/', index) 
 #3.
 # 注册一个URL处理函数
 def add_route(app, fn):

@@ -29,7 +29,7 @@ $(function() {
                         email: email,
                         passwd: this.passwd==='' ? '' : CryptoJS.SHA1(email + ':' + this.passwd).toString()
                     };
-                //#qingqing02 {'email': 'test', 'passwd': '576f2afcdca7238248dd1939e21d2bf0ee6432e8'}
+                //#qqing02-1.1 {'email': 'test', 'passwd': '576f2afcdca7238248dd1939e21d2bf0ee6432e8'}
                 $form.postJSON('/api/authenticate', data, function(err, result) {
                     if (! err) {
                         location.assign('/');

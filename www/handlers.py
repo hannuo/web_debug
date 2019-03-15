@@ -85,8 +85,7 @@ async def index(*, page='1',request):
         blogs = []
     else:
         blogs = await Blog.findAll(orderBy='created_at desc', limit=(page.offset, page.limit))
-    #qing04 - 1.2  返回一个dict，让response_factory处理
-	#qing06 - 1.
+    #qing04-1.2  返回一个dict，让response_factory处理.
 	return {
         '__template__': 'blogs.html',
         'page': page,
@@ -150,6 +149,7 @@ def signin():
         '__template__': 'signin.html'
     }
 
+#qqing02-1.2 kw:{'email': 'test', 'passwd': '576f2afcdca7238248dd1939e21d2bf0ee6432e8'}
 @post('/api/authenticate')
 async def authenticate(*, email, passwd):
     logging.info('@@ post /api/authenticate')
@@ -174,7 +174,7 @@ async def authenticate(*, email, passwd):
     user.passwd = '******'
     r.content_type = 'application/json'
     r.body = json.dumps(user, ensure_ascii=False).encode('utf-8')
-    #qingqing03 
+    #qqing03-1 response deal。
     return r
 
 #04 用户登出
@@ -259,6 +259,7 @@ async def api_delete_comments(id, request):
     await c.remove()
     return dict(id=id)
 
+#hqing-001 vue Ref. 
 #08 管理blog
 @get('/manage/blogs')
 def manage_blogs(*, page='1',request):
@@ -327,7 +328,7 @@ async def api_get_blog(*, id):
     blog = await Blog.find(id)
     return blog
 
-#qingqing01:id positional_or_keyword request positional_or_keyword
+#qqing01:id positional_or_keyword request positional_or_keyword
 #content keyword_only
 # * 前面的为positional_or_keyword 后面的为keyword_only
 @post('/api/blogs/{id}/comments')

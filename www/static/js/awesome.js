@@ -300,7 +300,7 @@ $(function () {
 });
 
 // ajax submit form:
-
+//#hqing-005
 function _httpJSON(method, url, data, callback) {
     var opt = {
         type: method,
@@ -314,27 +314,34 @@ function _httpJSON(method, url, data, callback) {
         opt.data = JSON.stringify(data || {});
         opt.contentType = 'application/json';
     }
+    console.log("_httpJSON:", opt);
+    //hqing-006 
     $.ajax(opt).done(function (r) {
         if (r && r.error) {
             return callback(r);
         }
+        console.log("ajax opt get restult:",r)
         return callback(null, r);
     }).fail(function (jqXHR, textStatus) {
         return callback({'error': 'http_bad_response', 'data': '' + jqXHR.status, 'message': '网络好像出问题了 (HTTP ' + jqXHR.status + ')'});
     });
 }
 
+//#hqing-004
 function getJSON(url, data, callback) {
-    if (arguments.length===2) {
+    if (arguments.length === 2) {
+        console.log("length = 2")
         callback = data;
         data = {};
     }
-    if (typeof (data)==='object') {
+    if (typeof (data) === 'object') {
+        console.log("data type is object")
         var arr = [];
         $.each(data, function (k, v) {
             arr.push(k + '=' + encodeURIComponent(v));
         });
         data = arr.join('&');
+        console.log(data);
     }
     _httpJSON('GET', url, data, callback);
 }

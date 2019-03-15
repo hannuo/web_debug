@@ -19,7 +19,7 @@ import orm
 from coroweb import add_routes, add_static
 from handlers import cookie2user, COOKIE_NAME
 
-#qing04 - 1.1 预先准备一个HTML文档，这个HTML文档不是普通的HTML，而是嵌入了一些变量和指令，
+#qing04-1.1 预先准备一个HTML文档，这个HTML文档不是普通的HTML，而是嵌入了一些变量和指令，
 #然后，根据我们传入的数据，替换后，得到最终的HTML，发送给用户
 #
 def init_jinja2(app, **kw):
@@ -78,7 +78,7 @@ async def data_factory(app, handler):
         logging.info('###data_factory,data handler...')
         if request.method == 'POST':
             if request.content_type.startswith('application/json'):
-                #qingqing02 request json:{'email': 'test', 'passwd': '576f2afcdca7238248dd1939e21d2bf0ee6432e8'}
+                #qqing02-1.5 request json:{'email': 'test', 'passwd': '576f2afcdca7238248dd1939e21d2bf0ee6432e8'}
                 #$form.postJSON('/api/authenticate', data, function(err, result)
                 request.__data__ = await request.json()
                 logging.info('###request json: %s' % str(request.__data__))
@@ -92,14 +92,14 @@ async def response_factory(app, handler):
     async def response(request):
 		#log11
         logging.info('##response_factory,Response handler...')
-        #qingqing03 handler(request) just is async def authenticate(*, email, passwd):
+        #qqing03-1.1 handler(request) just is async def authenticate(*, email, passwd):
         #wait handel
         #handler(request) 什么意思，三个地方都有。先后顺序呢？？这个是最后一步，过滤response
         r = await handler(request)
         logging.info('##handler(request):%s'% r)
-		#qingqing 03 @post('/api/authenticate') 返回一个web.streamResponse
+		#qqing03-1.2 @post('/api/authenticate') 返回一个web.streamResponse
         if isinstance(r, web.StreamResponse):
-            #qingqing03 ##handler(request):<Response OK not prepared>
+            #qqing03-1.3 ##handler(request):<Response OK not prepared>
             logging.info('##web.streamResponse.')
             return r
         if isinstance(r, bytes):
@@ -116,18 +116,18 @@ async def response_factory(app, handler):
             resp.content_type = 'text/html;charset=utf-8'
             logging.info('##str')
             return resp
-		#qingqing03 @get('/') 返回一个web.streamResponse
-		#qing-04 - 1.3  处理r 
+		#qqing03-1.4 @get('/') 返回一个web.streamResponse
+		#qing04-1.3  处理r 
         if isinstance(r, dict):
             template = r.get('__template__')
-			#qingqing03 @get('/api/comments') 返回一个json
+			#qqing03-1.5 @get('/api/comments') 返回一个json
             if template is None:
                 resp = web.Response(body=json.dumps(r, ensure_ascii=False, default=lambda o: o.__dict__).encode('utf-8'))
                 resp.content_type = 'application/json;charset=utf-8'
                 logging.info('##__template__ application/json')
                 return resp
             else:
-				#qing-04 - 1.4  app['__templating__'] = env '__template__': 'blogs.html'
+				#qing04-1.4  app['__templating__'] = env '__template__': 'blogs.html'
                 resp = web.Response(body=app['__templating__'].get_template(template).render(**r).encode('utf-8'))
                 resp.content_type = 'text/html;charset=utf-8'
                 ##handler(request):{'__template__': 'blogs.html', ...
@@ -167,13 +167,13 @@ async def init(loop):
 	#qing03-1 aiohttp web 
 	#Application is a synonym for web-server.
 	#Application contains a router instance and a list of callbacks that will be called during application finishing.
-    #qing03-2 logger_factory, data_factory, auth_factory, response_factory
+    #qing03-1.1 logger_factory, data_factory, auth_factory, response_factory
 	app = web.Application(loop=loop, middlewares=[
         logger_factory, data_factory, auth_factory, response_factory
     ])
 	#qing04-1 使用jinja2
     init_jinja2(app, filters=dict(datetime=datetime_filter))
-	#qing03-1.1 add_routes 
+	#qing03-1.2 add_routes 
     add_routes(app, 'handlers')
     add_static(app)
 	#qing01-1.4 loop ref 
