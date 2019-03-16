@@ -21,6 +21,10 @@ _COOKIE_KEY = configs.session.secret
 def check_admin(request):
     if request.__user__ is None or not request.__user__.admin:
         raise APIPermissionError()
+
+def check_user(request):
+    if request.__user__ is None:
+        raise APIPermissionError()
     
 def get_page_index(page_str):
     p = 1
@@ -351,18 +355,20 @@ async def api_create_comment(id, request, *, content):
     await comment.save()
     return comment	
 	
-@get('/blogs/user')
-async def index_twe(*, page='1',request):
-    logging.info('@@ get /blogs/user')
+@get('/blogs/user/have')
+async def get_twe(*, page='1',request):
+    logging.info('@@ get /blogs/user/have')
+    check_user(request)
     page_index = get_page_index(page)
     num = await Blog.findNumber('count(id)')
     page = Page(num)
     if num == 0:
         blogs = []
-        #blogs = await Blog.findAll(orderBy='created_at desc', limit=(page.offset, page.limit))
+    else:
+        blogs = await Blog.findAll('user_name=?',[request.__user__.name])
+    #qing04-1.2  返回一个dict，让response_factory处理.
     return {
         '__template__': 'blogs.html',
-        'page': page,
         'blogs': blogs,
         '__user__': request.__user__
     }

@@ -2,9 +2,9 @@
 
 今日成功
 
-1. 搞懂函数对象，参数过滤那块 #qingqing02
+1. 搞懂函数对象，参数过滤那块 #qingqing01 #qingqing02
 
-2. 搞懂一个处理request的大概顺序
+2. 搞懂一个处理request的大概顺序  #qingqing03
 logger_factory
 
 data_factory
