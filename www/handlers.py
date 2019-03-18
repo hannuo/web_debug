@@ -24,7 +24,7 @@ def check_admin(request):
 
 def check_user(request):
     if request.__user__ is None:
-        raise APIPermissionError()
+        return true
     
 def get_page_index(page_str):
     p = 1
@@ -97,9 +97,14 @@ async def index(*, page='1',request):
         '__user__': request.__user__
     }
 @get('/video')
-async def PlayVideo():
-    return {
-        '__template__': 'Play.html'
+async def PlayVideo(request):
+	if(check_user(request)):
+		return {
+			'__template__': 'Play.html'
+		}
+	else:
+		return {
+        '__template__': 'signin.html'
     }
 #02 REST 具象状态传输，返回所有用户信息
 @get('/api/users')
@@ -267,7 +272,7 @@ async def api_delete_comments(id, request):
     await c.remove()
     return dict(id=id)
 
-#hqing-001 vue Ref. 
+#hqing-001 vue Ref. ,管理所有博客，可以编辑，删除博客
 #08 管理blog
 @get('/manage/blogs')
 def manage_blogs(*, page='1',request):
