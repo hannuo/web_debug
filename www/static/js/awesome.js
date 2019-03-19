@@ -220,6 +220,7 @@ function Template(tpl) {
 $(function () {
     console.log('Extends $form...');
     $.fn.extend({
+        //Note
         showFormError: function (err) {
             return this.each(function () {
                 var
