@@ -259,7 +259,8 @@ async def api_update_blog(id, request, *, name, summary, content):
 
 #07 管理comments
 @get('/manage/')
-def manage():
+def manage(request):
+	check_admin(request)
     return 'redirect:/manage/comments'
 
 @get('/manage/comments')
