@@ -24,10 +24,10 @@ def check_admin(request):
 
 def check_user(request):
     if request.__user__ is None:
-		return False
-	else:
+        return False
+    else:
         return True
-    
+
 def get_page_index(page_str):
     p = 1
     try:
@@ -365,9 +365,9 @@ async def api_create_comment(id, request, *, content):
 @get('/blogs/user/have')
 async def get_twe(*, page='1',request):
     logging.info('@@ get /blogs/user/have')
-    if(!check_user(request)):
-		return {
-			'__template__': 'signin.html'
+    if(not check_user(request)):
+        return {
+		    '__template__': 'signin.html'
 		}
     page_index = get_page_index(page)
     num = await Blog.findNumber('count(id)')
