@@ -1,0 +1,40 @@
+{% extends '__base__.html' %}
+
+{% block title %}视频{% endblock %}
+
+{% block beforehead %}
+
+<link href="https://vjs.zencdn.net/7.4.1/video-js.css" rel="stylesheet">
+<!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
+<script src="https://vjs.zencdn.net/ie8/ie8-version/videojs-ie8.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="uk-width-medium-3-4">
+	{% for video in videos %}
+	<video id='my-video' class='video-js' controls preload='auto' width='640' height='264'
+		   poster='./static/{{ video.poster }}' data-setup='{}'>
+		<source src='./static/{{ video.src }}' type='video/mp4'>
+		<p class='vjs-no-js'>
+			To view this video please enable JavaScript, and consider upgrading to a web browser that
+			<a href='https://videojs.com/html5-video-support/' target='_blank'>supports HTML5 video</a>
+		</p>
+	</video>
+	<hr class="uk-article-divider">
+	{% endfor %}
+</div>
+<div class="uk-width-medium-1-4">
+	<div class="uk-panel uk-panel-header">
+		<h3 class="uk-panel-title">友情链接</h3>
+		<ul class="uk-list uk-list-line">
+			{% if __user__ %}
+			<li><i class="uk-icon-thumbs-o-up"></i> <a target="_blank" href="http://www.freebuf.com/">极客</a></li>
+			{% else %}
+			<li><i class="uk-icon-thumbs-o-up"></i> <a target="_blank" href="http://www.freebuf.com/">极客</a></li>
+			<li><i class="uk-icon-thumbs-o-up"></i> <a target="_blank" href="http://www.baidu.com">百度</a></li>
+			{% endif %}
+		</ul>
+	</div>
+</div>
+{% endblock %}

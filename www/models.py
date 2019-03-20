@@ -54,3 +54,11 @@ class Comment(Model):
     user_image = StringField(ddl='varchar(500)')
     content = TextField()
     created_at = FloatField(default=time.time)
+
+class Video(Model):
+    __table__ = 'videos'
+
+    id = StringField(primary_key=True, default=next_id, ddl='varchar(50)')
+    poster = StringField(ddl='varchar(50)')
+    src = StringField(ddl='varchar(50)')
+	created_at = FloatField(default=time.time)

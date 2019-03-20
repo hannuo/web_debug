@@ -98,6 +98,25 @@ async def index(*, page='1',request):
         'blogs': blogs,
         '__user__': request.__user__
     }
+
+#01 主页
+@get('/videos')
+async def index(*, page='1',request):
+    logging.info('@@ get /videos')
+    page_index = get_page_index(page)
+    num = await Video.findNumber('count(id)')
+    page = Page(num)
+    if num == 0:
+        videos = []
+    else:
+        videos = await Video.findAll(limit=(page.offset, page.limit))
+    #qing04-1.2  返回一个dict，让response_factory处理.
+    return {
+        '__template__': 'videos.html',
+        'page': page,
+        'blogs': videos,
+        '__user__': request.__user__
+    }
 @get('/video')
 async def PlayVideo(request):
 	if(check_user(request)):
