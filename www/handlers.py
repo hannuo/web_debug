@@ -12,7 +12,7 @@ import markdown2
 from aiohttp import web
 from coroweb import get, post
 from apis import Page, APIValueError, APIResourceNotFoundError
-from models import User, Comment, Blog, Video，next_id
+from models import User, Comment, Blog, Video, next_id
 from config import configs
 
 COOKIE_NAME = 'awesession'
@@ -116,7 +116,7 @@ async def index(*, page='1',request):
     return {
         '__template__': 'videos.html',
         'page': page,
-        'blogs': videos,
+        'videos': videos,
         '__user__': request.__user__
     }
 @get('/video')
