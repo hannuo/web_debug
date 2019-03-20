@@ -61,4 +61,4 @@ class Video(Model):
     id = StringField(primary_key=True, default=next_id, ddl='varchar(50)')
     poster = StringField(ddl='varchar(50)')
     src = StringField(ddl='varchar(50)')
-	created_at = FloatField(default=time.time)
+    created_at = FloatField(default=time.time)

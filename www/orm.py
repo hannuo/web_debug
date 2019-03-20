@@ -266,8 +266,6 @@ class Model(dict, metaclass=ModelMetaclass):
         args = list(map(self.getValue, self.__fields__))
         args.append(self.getValue(self.__primary_key__))
         rows = await execute(self.__update__, args)
-		logging.info("###################")
-		logging.info(self.__update__, args)
         if rows != 1:
             logging.warn('failed to update by primary key: affected rows: %s' % rows)
 

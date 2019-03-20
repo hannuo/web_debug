@@ -104,6 +104,8 @@ async def index(*, page='1',request):
 async def index(*, page='1',request):
     logging.info('@@ get /videos')
     page_index = get_page_index(page)
+	video = Video(poster='show.JPG',src='test.mp4')
+    await video.save()
     num = await Video.findNumber('count(id)')
     page = Page(num)
     if num == 0:
