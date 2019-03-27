@@ -101,24 +101,30 @@ async def index(*, page='1',request):
 
 #01 主页
 @get('/videos')
-async def index(*, page='1',request):
+async def paly_videos(*, page='1',request):
     logging.info('@@ get /videos')
     page_index = get_page_index(page)
-    video = Video(poster='show.JPG',src='test.mp4')
-    await video.save()
+    #video = Video(poster='show.JPG',src='test.mp4')
+    #await video.save()
     num = await Video.findNumber('count(id)')
     page = Page(num)
-    if num == 0:
-        videos = []
-    else:
-        videos = await Video.findAll(limit=(page.offset, page.limit))
-    #qing04-1.2  返回一个dict，让response_factory处理.
-    return {
-        '__template__': 'videos.html',
-        'page': page,
-        'videos': videos,
-        '__user__': request.__user__
+	if(check_user(request)):
+		if num == 0:
+            videos = []
+        else:
+            videos = await Video.findAll(limit=(page.offset, page.limit))
+        #qing04-1.2  返回一个dict，让response_factory处理.
+        return {
+            '__template__': 'videos.html',
+            'page': page,
+            'videos': videos,
+            '__user__': request.__user__
     }
+	else:
+		return {
+        '__template__': 'signin.html'
+    }
+
 @get('/video')
 async def PlayVideo(request):
 	if(check_user(request)):
