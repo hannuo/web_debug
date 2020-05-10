@@ -101,11 +101,11 @@ async def index(*, page='1',request):
 
 #01 主页
 @get('/videos')
-async def index(*, page='1',request):
+async def play_videos(*, page='1',request):
     logging.info('@@ get /videos')
     page_index = get_page_index(page)
-    video = Video(poster='show.JPG',src='test.mp4')
-    await video.save()
+    #video = Video(poster='show.JPG',src='test.mp4')
+    #await video.save()
     num = await Video.findNumber('count(id)')
     page = Page(num)
     if num == 0:
@@ -113,6 +113,7 @@ async def index(*, page='1',request):
     else:
         videos = await Video.findAll(limit=(page.offset, page.limit))
     #qing04-1.2  返回一个dict，让response_factory处理.
+    check_admin(request)
     return {
         '__template__': 'videos.html',
         'page': page,
