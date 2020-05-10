@@ -46,7 +46,7 @@ create table comments (
     primary key (`id`)
 ) engine=innodb default charset=utf8;
 
-create table videos (
+create table sh (
     `id` varchar(50) not null,
     `poster` varchar(50) not null,
     `src` varchar(50) not null,

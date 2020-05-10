@@ -60,7 +60,7 @@ async def cookie2user(cookie_str):
     if not cookie_str:
         return None
     try:
-		##0015471912220111be18497722f41c990471a69d4267503000-1548400507-98b97b8c031fccc33cb283c0f58d40e7c354984e
+        ##0015471912220111be18497722f41c990471a69d4267503000-1548400507-98b97b8c031fccc33cb283c0f58d40e7c354984e
         L = cookie_str.split('-')
         if len(L) != 3:
             return None
@@ -108,26 +108,37 @@ async def play_videos(*, page='1',request):
     #await video.save()
     num = await Video.findNumber('count(id)')
     page = Page(num)
-    if num == 0:
-        videos = []
+    if(check_user(request)):
+        if num == 0:
+            videos = []
+        else:
+            videos = await Video.findAll(limit=(page.offset, page.limit))
+        #qing04-1.2  返回一个dict，让response_factory处理.
+        return {
+            '__template__': 'videos.html',
+            'page': page,
+            'videos': videos,
+            '__user__': request.__user__
+    }
     else:
         videos = await Video.findAll(limit=(page.offset, page.limit))
     #qing04-1.2  返回一个dict，让response_factory处理.
-    check_admin(request)
-    return {
-        '__template__': 'videos.html',
-        'page': page,
-        'videos': videos,
-        '__user__': request.__user__
+        check_admin(request)
+        return {
+            '__template__': 'videos.html',
+            'page': page,
+            'videos': videos,
+            '__user__': request.__user__
     }
+
 @get('/video')
 async def PlayVideo(request):
-	if(check_user(request)):
-		return {
+    if(check_user(request)):
+        return {
 			'__template__': 'Play.html'
 		}
-	else:
-		return {
+    else:
+        return {
         '__template__': 'signin.html'
     }
 #02 REST 具象状态传输，返回所有用户信息
@@ -252,9 +263,9 @@ async def api_create_blog(request, *, name, summary, content):
     if not content or not content.strip():
         raise APIValueError('content', 'content cannot be empty.')
     if(check_user(request)):
-	    blog = Blog(user_id=request.__user__.id, user_name=request.__user__.name, user_image=request.__user__.image, name=name.strip(), summary=summary.strip(), content=content.strip())
-	    await blog.save()
-	    return blog	
+        blog = Blog(user_id=request.__user__.id, user_name=request.__user__.name, user_image=request.__user__.image, name=name.strip(), summary=summary.strip(), content=content.strip())
+        await blog.save()
+        return blog
     else:
         return {
             '__template__': 'signin.html'
